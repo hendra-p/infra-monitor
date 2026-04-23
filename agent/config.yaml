@@ -1,0 +1,7 @@
+api:
+  endpoint: "http://127.0.0.1:8000/api/v1/metrics"
+  timeout_seconds: 5
+
+agent:
+  interval_seconds: 5
+  log_level: "INFO"
