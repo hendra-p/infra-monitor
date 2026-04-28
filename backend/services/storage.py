@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from backend.core.config import settings
 from backend.models.domain import Base, MetricRecord, InsightRecord
 import json
@@ -53,7 +53,7 @@ class MetricStorage:
 
     def get_metrics_by_range(self, hours: int = 1):
         """Get metrics within a given time range (in hours). Max 14 days = 336 hours."""
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         return (
             self.db.query(MetricRecord)
             .filter(MetricRecord.timestamp >= cutoff)
@@ -84,7 +84,7 @@ class MetricStorage:
 
     def cleanup_old_data(self, retention_days: int = 14):
         """Delete data older than retention period."""
-        cutoff = datetime.utcnow() - timedelta(days=retention_days)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=retention_days)
         deleted_metrics = self.db.query(MetricRecord).filter(MetricRecord.timestamp < cutoff).delete()
         deleted_insights = self.db.query(InsightRecord).filter(InsightRecord.timestamp < cutoff).delete()
         self.db.commit()

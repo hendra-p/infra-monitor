@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ProcessInfo(BaseModel):
     pid: int
@@ -9,7 +9,7 @@ class ProcessInfo(BaseModel):
     memory_percent: float
 
 class SystemMetricsPayload(BaseModel):
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     cpu_percent: float
     memory_percent: float
     memory_used_gb: float

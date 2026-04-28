@@ -46,12 +46,12 @@ const apiService = {
     const params = new URLSearchParams();
     if (hours) params.set('hours', hours.toString());
     if (limit) params.set('limit', limit.toString());
-    const res = await fetch(`${API_BASE}/metrics?${params.toString()}`);
+    const res = await fetch(`${API_BASE}/metrics?${params.toString()}&_t=${Date.now()}`);
     if (!res.ok) throw new Error('Failed to fetch metrics');
     return res.json();
   },
   async fetchInsights(limit = 10): Promise<Insight[]> {
-    const res = await fetch(`${API_BASE}/insights?limit=${limit}`);
+    const res = await fetch(`${API_BASE}/insights?limit=${limit}&_t=${Date.now()}`);
     if (!res.ok) throw new Error('Failed to fetch insights');
     return res.json();
   }
@@ -126,8 +126,10 @@ function Dashboard() {
 
   const formatTime = (ts: string) => {
     try {
-      const d = new Date(ts);
-      if (selectedRange <= 24) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      // Ensure the timestamp is treated as UTC if it doesn't have a timezone indicator
+      const timeStr = ts.endsWith('Z') || ts.includes('+') ? ts : ts + 'Z';
+      const d = new Date(timeStr);
+      if (selectedRange <= 24) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       return d.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     } catch { return ts; }
   };

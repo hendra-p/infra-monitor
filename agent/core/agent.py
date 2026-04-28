@@ -36,7 +36,7 @@ class SystemMonitorAgent:
         self.running = False
 
     def _collect_and_send(self):
-        payload = SystemMetricsPayload(timestamp=datetime.utcnow().isoformat())
+        payload = SystemMetricsPayload(timestamp=datetime.utcnow().isoformat() + 'Z')
         
         # Collect metrics from all registered collectors
         for collector in self.collectors:
